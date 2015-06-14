@@ -8,3 +8,6 @@ run:
 
 deploy:
 	git push dokku master
+
+clean:
+	rm hxn-api
