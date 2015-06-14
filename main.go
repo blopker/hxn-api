@@ -28,7 +28,7 @@ func articleHandler(w http.ResponseWriter, r *http.Request) {
 	urls := r.URL.Query()["url"]
 
 	if urls == nil {
-		http.Error(w, "Please supply a 'url' query paremeter", http.StatusNotFound)
+		w.Write([]byte("Please supply a 'url' query paremeter"))
 		return
 	}
 
