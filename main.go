@@ -61,6 +61,5 @@ func getArticle(url string) (article, error) {
 	}
 
 	cache.Add(url, a)
-
 	return a, nil
 }
