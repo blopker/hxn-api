@@ -2,18 +2,19 @@ package main
 
 import (
 	"encoding/json"
-	"lru"
 	"net/http"
+
+	"github.com/blopker/hxn-api/lru"
 )
 
 var conf Config
-var cache lru.Cache
+var cache *lru.Cache
 
 func main() {
 	conf.Load()
-	cache = lru.New(512)
+	cache, _ = lru.New(512)
 	http.HandleFunc("/", articleHandler)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":"+conf.Port, nil)
 }
 
 type article struct {
@@ -45,6 +46,11 @@ func articleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getArticle(url string) (article, error) {
+	var a article
+
+	if a, ok := cache.Get(url); ok {
+		return a.(article), nil
+	}
 
 	resp, err := http.Get("https://www.readability.com/api/content/v1/parser?token=" + conf.Token + "&url=" + url)
 
@@ -53,8 +59,6 @@ func getArticle(url string) (article, error) {
 	}
 
 	defer resp.Body.Close()
-
-	var a article
 
 	if err := json.NewDecoder(resp.Body).Decode(&a); err != nil {
 		return article{}, err
