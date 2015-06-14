@@ -1,7 +1,7 @@
 all: build
 
 build:
-	go build main.go
+	go build
 
 run:
 	go run *.go
